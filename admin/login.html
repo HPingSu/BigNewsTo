@@ -1,43 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>大事件-后台登录页</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <!-- 引入bootstrap的css文件 -->
+    <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css" />
+    <!-- 引入jq文件 -->
+    <script src="./libs/jquery-1.12.4.min.js"></script>
+    <!-- 引入bootstrap的js文件 -->
+    <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>大事件-后台登录页</title>
-  <link rel="stylesheet" type="text/css" href="css/reset.css" />
-  <link rel="stylesheet" type="text/css" href="css/iconfont.css" />
-  <link rel="stylesheet" type="text/css" href="css/main.css" />
-  <!-- 引入bootstrap的css文件 -->
-  <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css" />
-  <!-- 引入jq文件 -->
-  <script src="./libs/jquery-1.12.4.min.js"></script>
-  <!-- 引入bootstrap的js文件 -->
-  <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
-</head>
+  <body>
+    <div class="main_wrap">
+      <div class="header">
+        <a href="#" class="logo"><img src="images/logo.png" alt=""/></a>
+        <div class="copyright">
+          CopyRight © 2019 深圳百秀信息技术股份有限公司<br />All Rights Reserved
+        </div>
+      </div>
 
-<body>
-  <div class="main_wrap">
-    <div class="header">
-      <a href="#" class="logo"><img src="images/logo.png" alt="" /></a>
-      <div class="copyright">
-        CopyRight © 2019 深圳百秀信息技术股份有限公司<br />All Rights Reserved
+      <div class="login_form_con">
+        <div class="login_title"></div>
+        <form class="login_form">
+          <i class="iconfont icon-user"></i>
+          <i class="iconfont icon-key"></i>
+          <input type="text" class="input_txt" placeholder="邮箱/手机号" />
+          <input type="password" class="input_pass" placeholder="密码" />
+          <input type="submit" class="input_sub" value="登 录" />
+        </form>
       </div>
     </div>
 
-    <div class="login_form_con">
-      <div class="login_title"></div>
-      <form class="login_form">
-        <i class="iconfont icon-user"></i>
-        <i class="iconfont icon-key"></i>
-        <input type="text" class="input_txt" placeholder="邮箱/手机号" />
-        <input type="password" class="input_pass" placeholder="密码" />
-        <input type="submit" class="input_sub" value="登 录" />
-      </form>
+    <!-- Button trigger modal（按钮触发模式） -->
+    <button
+      type="button"
+      class="btn btn-primary btn-lg"
+      data-toggle="modal"
+      data-target="#myModal"
+    >
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="myModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal">
+              关闭
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-
-</body>
-
+    <script>
+      //登录功能
+      //入口函数
+      $(function() {
+        //点击按钮才发送请求
+        $(".login_form").submit(function(e) {
+          //阻止表单的默认行为
+          e.preventDefault();
+          //触发登录按钮点击事件
+          const input_txt = $(".input_txt").val();
+          const input_pass = $(".input_pass").val();
+          // console.log(input_txt, input_pass);
+          if (input_txt === "" || input_pass === "") {
+            $("#myModal").modal({ keyboard: true });
+            $(".modal-body").html("用户名或密码不能为空");
+            // 如果内容为空，不执行下面操作
+            return;
+          }
+          //进行ajax请求
+          $.ajax({
+            type: "post",
+            url: "http://localhost:8080/api/v1/admin/user/login",
+            data: {
+              username: input_txt,
+              password: input_pass
+            },
+            dataType: "json",
+            success: function(response) {
+              console.log(response);
+              const code = response.code;
+              const msg = response.msg;
+              const token = response.token; //成功才有token值
+              // 登录成功的code为200
+              if (code === 200) {
+                //把token令牌存入本地里
+                localStorage.setItem("token", token);
+                // 跳转到后台主页面
+                location.href = "./index.html";
+              }
+              $("#myModal").modal({ keyboard: true });
+              $(".modal-body").html(msg); //获取文本内容$().html()/text()
+              // 清空文本
+              $(".input_txt").val("");
+              $(".input_pass").val("");
+            }
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
