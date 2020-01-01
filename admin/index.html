@@ -121,6 +121,41 @@
           //删除本地的token令牌
           localStorage.removeItem("token");
         });
+
+        //点击左边栏
+        // 点击一级列表
+        $(".level01").click(function() {
+          $(this)
+            .addClass("active")
+            .siblings()
+            .removeClass("active");
+          ///展开文章管理的二级列表
+          if (
+            $(this)
+              .next()
+              .hasClass("level02")
+          ) {
+            $(".level02").slideToggle();
+            $(this)
+              .find("b")
+              .toggleClass("rotate0");
+            //默认选中第一个
+            $(".level02>li>a")
+              .first()[0]
+              .click();
+            // console.log($(".level02>li>a").first()[0]);
+          } else {
+            //如果点击的不是文章管理一级菜单列表，则移除二级列表的选中样式
+            $(".level02>li").removeClass("active");
+          }
+        });
+        //二级列表的样式 ($(".level02")是ul)
+        $(".level02>li").click(function() {
+          $(this)
+            .addClass("active")
+            .siblings()
+            .removeClass("active");
+        });
       });
     </script>
   </body>
