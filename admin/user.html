@@ -150,7 +150,7 @@
         // console.dir(this);
         //this  就代表当前点击的上传输入框。（输入框默认只能传一个文件）
         // flies  就是文件列表，伪数组格式[0]就代表第一项
-        let file = this.files[0];
+        const file = this.files[0];
         //file 就是选取文件，用户如果选择图片但取消了，会得到undefined,所以添加个判断
         if (file) {
           //1.3通过浏览器提供的URL对象，把文件转成浏览器能识别特殊的路径
@@ -165,28 +165,33 @@
       });
       //功能3：编辑用户信息(formData())
       //进行触发点击事件
-      $("#form").on("submit", function(e) {
+      $("#form").submit(function(e) {
         //阻止表单默认行为
         e.preventDefault();
         //this 在这个事件里面代表这个表单对象。
         //new FormData() 传入表单对象，可以把表单对象的数据转成formData对象
         //   进行ajax请求
+        const fdObj = new FormData(this);
         $.ajax({
           type: "post",
           url: BigNew.user_edit,
-          data: new FormData(this),
+          data: fdObj,
           dataType: "json",
           contentType: false,
           processData: false, //不希望转换的信息
           success: function(response) {
             console.log(response);
             const code = response.code;
-            if (code === 200) {
-              const msg = response.msg;
-              alert(msg);
-              //父页面刷新
-              //   parent.window.location.reload();
-            }
+            const msg = response.msg;
+
+            alert(msg);
+            //父页面刷新
+            parent.window.location.reload(); //记得用liveServer开
+            // // 方案2：从 fromData 对象中把图片转 url 路径，或者选用方案1，注释掉方案2
+            // const url = URL.createObjectURL(fdObj.get("userPic"));
+            // const nickname = fdObj.get("nickname");
+            // parent.$(".user_info img,.user_center_link img").attr("src", url);
+            // parent.$(".user_info span").html("欢迎大佬：" + nickname);
           }
         });
       });
